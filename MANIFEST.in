@@ -1,0 +1,12 @@
+graft src
+
+include .bumpversion.cfg
+include .editorconfig
+
+include AUTHORS.md
+include CHANGELOG.md
+include CODE_OF_CONDUCT.md
+include LICENSE
+include README.md
+
+global-exclude *.py[cod] __pycache__ *.so *.dylib
