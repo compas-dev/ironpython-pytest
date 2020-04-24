@@ -1,4 +1,7 @@
+
 # ironpython-pytest
+
+![Version](https://img.shields.io/pypi/v/ironpython-pytest) ![License](https://img.shields.io/pypi/l/ironpython-pytest)
 
 > Ridiculously minimal and incomplete pytest replacement for IronPython.
 
