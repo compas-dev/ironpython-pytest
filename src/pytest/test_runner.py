@@ -125,7 +125,7 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
                         test_method(**kwargs)
 
                         result['result'] = '.'
-                    except:
+                    except:   # noqa: E722
                         errors += 1
                         result['result'] = 'F'
                         result['exception'] = traceback.format_exc()
