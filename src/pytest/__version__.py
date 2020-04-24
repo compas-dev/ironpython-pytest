@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 __author__ = 'Gramazio Kohler Research'
 __copyright__ = 'Copyright 2020 Gramazio Kohler Research'
-__license__ = 'MIT License'
+__license__ = 'MIT'
 __email__ = 'gramaziokohler@arch.ethz.ch'
 
 __version__ = '0.1.0'
