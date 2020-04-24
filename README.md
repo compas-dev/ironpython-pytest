@@ -21,7 +21,7 @@ From the command line:
 
     ipy -m pytest file_or_dir
 
-Or programatically:
+Or programmatically:
 
 ```python
 import os
