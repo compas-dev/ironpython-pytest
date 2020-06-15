@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import argparse
 import contextlib
+import itertools
 
 FIXTURES = dict()
 
@@ -16,7 +17,19 @@ def fixture(func):
 
 def parametrize(argnames='', argvalues=None):
     def decorator_param(func):
-        func._parametrized_arguments = dict(argnames=argnames, argvalues=argvalues)
+        # If the argnames are single arguments, we assume it is a stacked parametrize decorator
+        if isinstance(argnames, str) and ',' not in argnames:
+            if not hasattr(func, '_stacked_parametrized_names'):
+                func._stacked_parametrized_names = []
+                func._stacked_parametrized_values = []
+            func._stacked_parametrized_names.append(argnames)
+            func._stacked_parametrized_values.append(argvalues)
+            func._parametrized_arguments = dict(
+                argnames=func._stacked_parametrized_names,
+                argvalues=list(itertools.product(*func._stacked_parametrized_values))
+            )
+        else:
+            func._parametrized_arguments = dict(argnames=argnames, argvalues=argvalues)
         return func
 
     return decorator_param
