@@ -11,7 +11,7 @@ It makes a ton of assumptions and has very little configurability.
 
 Deal with it.
 
-(•_•) ( •_•)>⌐■-■ (⌐■_■)
+(•\_•) ( •\_•)>⌐■-■ (⌐■\_■)
 
 ## Installation
 
