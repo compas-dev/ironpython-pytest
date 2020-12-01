@@ -42,6 +42,7 @@ def skip(func):
     func._skip = True
     return func
 
+
 @contextlib.contextmanager
 def raises(exception_type):
     did_raise = False
@@ -53,5 +54,6 @@ def raises(exception_type):
     finally:
         if not did_raise:
             raise AssertionError('Did not raise exception of type {}'.format(exception_type))
+
 
 mark = argparse.Namespace(parametrize=parametrize, skip=skip)
