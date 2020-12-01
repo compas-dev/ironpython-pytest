@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+### Fixed
+
+Fixed usage of ``pytest.mark.skip``.
+
 ## 0.3.1
 
 ### Fixed
