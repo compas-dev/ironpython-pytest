@@ -7,7 +7,7 @@ import itertools
 
 FIXTURES = dict()
 
-__all__ = ['fixture', 'mark', 'parametrize', 'raises']
+__all__ = ['fixture', 'mark', 'parametrize', 'raises', 'skip']
 
 
 def fixture(func):
