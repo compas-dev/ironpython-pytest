@@ -64,6 +64,7 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
 
     counter = 0
     errors = 0
+    skips = 0
     collected_errors = dict()
 
     start_time = time.time()
@@ -111,20 +112,24 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
 
                 with capture(capture_stdout) as out:
                     try:
-                        argument_names = test_method.__code__.co_varnames[0:test_method.__code__.co_argcount]
+                        if hasattr(test_method, '_skip') and test_method._skip:
+                            skips += 1
+                            result['result'] = 's'
+                        else:
+                            argument_names = test_method.__code__.co_varnames[0:test_method.__code__.co_argcount]
 
-                        # Inject fixture if needed
-                        for argkey in argument_names:
-                            if argkey in kwargs:
-                                continue
-                            if argkey not in FIXTURES:
-                                raise Exception('Test method "{}" needs argument "{}" but no fixture with that name'.format(test_method_name, argkey))
-                            kwargs[argkey] = FIXTURES[argkey]()
+                            # Inject fixture if needed
+                            for argkey in argument_names:
+                                if argkey in kwargs:
+                                    continue
+                                if argkey not in FIXTURES:
+                                    raise Exception('Test method "{}" needs argument "{}" but no fixture with that name'.format(test_method_name, argkey))
+                                kwargs[argkey] = FIXTURES[argkey]()
 
-                        # Invoke test method
-                        test_method(**kwargs)
+                            # Invoke test method
+                            test_method(**kwargs)
 
-                        result['result'] = '.'
+                            result['result'] = '.'
                     except:   # noqa: E722
                         errors += 1
                         result['result'] = 'F'
@@ -166,5 +171,13 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
         for key, result in collected_errors.items():
             print('FAILED {} - {}'.format(key, result['exception_message']))
 
-    print_title('{} failed, {} passed in {:.2f}s'.format(errors, counter - errors, end_time - start_time))
+    passes = counter - errors - skips
+    texts = []
+    if errors:
+        texts.append('{} failed'.format(errors))
+    if passes:
+        texts.append('{} passed'.format(passes))
+    if skips:
+        texts.append('{} skipped'.format(skips))
+    print_title('{} in {:.2f}s'.format(', '.join(texts), end_time - start_time))
     sys.exit(errors)
