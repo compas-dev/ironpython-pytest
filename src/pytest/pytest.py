@@ -38,9 +38,15 @@ def parametrize(argnames='', argvalues=None):
     return decorator_param
 
 
-def skip(func):
-    func._skip = True
-    return func
+def skip(test_method=None, _reason=None):
+    def wrapped(func):
+        func._skip = True
+        return func
+
+    if test_method is not None:
+        return wrapped(test_method)
+    else:
+        return wrapped
 
 
 @contextlib.contextmanager
