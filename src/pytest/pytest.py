@@ -38,7 +38,7 @@ def parametrize(argnames='', argvalues=None):
     return decorator_param
 
 
-def skip(test_method=None, _reason=None):
+def skip(test_method=None, reason=None):
     def wrapped(func):
         func._skip = True
         return func
