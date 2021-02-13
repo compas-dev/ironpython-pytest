@@ -38,3 +38,18 @@ if __name__ == '__main__':
 
     pytest.run('project/test_dir/')
 ```
+
+## Release
+
+To release a new version of this project:
+
+- Update the changelog with all novelty
+- Bump version:
+
+    bump2version [major|minor|patch] --verbose
+
+- Push it:
+
+    git push && git push --tags
+
+- Prepare the changelog for next release
