@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added support for nested fixtures
+
 ### Changed
 
 ### Removed
@@ -19,19 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-Fixed usage of ``pytest.mark.skip`` (again).
+* Fixed usage of ``pytest.mark.skip`` (again).
 
 ## 0.3.2
 
 ### Fixed
 
-Fixed usage of ``pytest.mark.skip``.
+* Fixed usage of ``pytest.mark.skip``.
 
 ## 0.3.1
 
 ### Fixed
 
-Added ``skip`` to ``__all__``
+* Added ``skip`` to ``__all__``
 
 ## 0.3.0
 

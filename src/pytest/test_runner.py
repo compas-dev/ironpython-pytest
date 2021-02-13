@@ -60,6 +60,20 @@ def load_fake_module(name, fake_types=None, stubs=None):
     sys.modules[name] = module
 
 
+def build_kwargs(test_method_name, test_method, kwargs):
+    argument_names = test_method.__code__.co_varnames[0:test_method.__code__.co_argcount]
+
+    # Inject fixture (recursively) if needed
+    for argkey in argument_names:
+        if argkey in kwargs:
+            continue
+        if argkey not in FIXTURES:
+            raise Exception('Test method "{}" needs argument "{}" but no fixture with that name'.format(test_method_name, argkey))
+        fixture_kwargs = dict()
+        build_kwargs(test_method_name, FIXTURES[argkey], fixture_kwargs)
+        kwargs[argkey] = FIXTURES[argkey](**fixture_kwargs)
+
+
 def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
     loaded_modules = list(sys.modules)
 
@@ -117,15 +131,7 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
                             skips += 1
                             result['result'] = 's'
                         else:
-                            argument_names = test_method.__code__.co_varnames[0:test_method.__code__.co_argcount]
-
-                            # Inject fixture if needed
-                            for argkey in argument_names:
-                                if argkey in kwargs:
-                                    continue
-                                if argkey not in FIXTURES:
-                                    raise Exception('Test method "{}" needs argument "{}" but no fixture with that name'.format(test_method_name, argkey))
-                                kwargs[argkey] = FIXTURES[argkey]()
+                            build_kwargs(test_method_name, test_method, kwargs)
 
                             # Invoke test method
                             test_method(**kwargs)
