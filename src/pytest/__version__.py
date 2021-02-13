@@ -1,5 +1,5 @@
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import print_function
 
 __author__ = 'Gramazio Kohler Research'
 __copyright__ = 'Copyright 2020 Gramazio Kohler Research'

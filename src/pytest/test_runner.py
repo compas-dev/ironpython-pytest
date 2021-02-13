@@ -9,6 +9,7 @@ import sys
 import time
 import traceback
 import types
+
 from StringIO import StringIO
 
 from .pytest import FIXTURES
