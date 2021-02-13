@@ -1,7 +1,9 @@
 graft src
+graft tests
 
 include .bumpversion.cfg
 include .editorconfig
+include requirements-dev.txt
 
 include AUTHORS.md
 include CHANGELOG.md
