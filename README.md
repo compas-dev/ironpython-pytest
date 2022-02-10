@@ -5,7 +5,7 @@
 
 > Ridiculously minimal and incomplete pytest replacement for IronPython.
 
-This is **not** an attempt to fork [`pytest`](https://docs.pytest.org/) to IronPython (as the seemingly abandoned [pytest-ironpython](https://bitbucket.org/dahlia/pytest-ironpython/)), instead it's intended to provide the bare minimum for a drop-in replacement of a subset of `pytest` conventions and framework required to run unit tests on IronPython.
+This is **not** an attempt to fork [`pytest`](https://docs.pytest.org/) to IronPython (as the abandoned `pytest-ironpython`), instead it's intended to provide the bare minimum for a drop-in replacement of a subset of `pytest` conventions and framework required to run unit tests on IronPython.
 
 It makes a ton of assumptions and has very little configurability.
 
@@ -46,10 +46,10 @@ To release a new version of this project:
 - Update the changelog with all novelty
 - Bump version:
 
-    bump2version [major|minor|patch] --verbose
+      bump2version [major|minor|patch] --verbose
 
 - Push it:
 
-    git push && git push --tags
+      git push && git push --tags
 
 - Prepare the changelog for next release
