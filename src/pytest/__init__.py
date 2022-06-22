@@ -20,3 +20,4 @@ from __future__ import print_function
 from .__version__ import *    # noqa: F401 F403
 from .pytest import *         # noqa: F401 F403
 from .test_runner import *    # noqa: F401 F403
+from .mock import mocker
