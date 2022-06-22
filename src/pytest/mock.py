@@ -1,4 +1,4 @@
-"""Add minimal mock and patch functionality to this package"""
+"""Add mock and patch functionality in the same minimal, assuming, spirit of this package"""
 import importlib
 
 from pytest import fixture
@@ -20,6 +20,12 @@ class Mock(object):
             object.__setattr__(self, *key_value)
 
     def __call__(self, *args, **kwargs):
+        """
+        Call this mock as a method.
+        No side effects. Returns None or self.return_value, if set.
+
+        TODO: add side effect functionality
+        """
         return self.return_value
 
     def __getattribute__(self, item):
@@ -34,11 +40,17 @@ class Mock(object):
 class Patcher(object):
     """
     Patches attributes/methods of types, replacing them with a Mock() object.
-
-    >>> patcher = Patcher()
-    >>> patcher("path.to.module.Type.attribute")
     """
     def __call__(self, *args, **kwargs):
+        """
+        Parameters:
+        ----------
+        target : str
+            The target attribute or method to mock. A complete path to target including package and module.
+
+        >>> patcher = Patcher()
+        >>> patcher("path.to.module.Type.attribute")
+        """
         if "target" in kwargs:
             target = kwargs["target"]
         elif len(args) > 0:
