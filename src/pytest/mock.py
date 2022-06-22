@@ -41,6 +41,7 @@ class Patcher(object):
     """
     Patches attributes/methods of types, replacing them with a Mock() object.
     """
+
     def __call__(self, *args, **kwargs):
         """
         Parameters:
@@ -74,6 +75,7 @@ class Mocker(object):
     """
     Provides a minimal interface which behaves, to a miserable extent, as the pytest-mock.MockerFixture.
     """
+
     def __init__(self):
         self.patch = Patcher()
         self.Mock = Mock
