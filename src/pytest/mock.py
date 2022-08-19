@@ -1,6 +1,4 @@
 """Add mock and patch functionality in the same minimal, assuming, spirit of this package"""
-import importlib
-
 from pytest import fixture
 
 __all__ = ["mocker"]
@@ -41,6 +39,10 @@ class Patcher(object):
     """
     Patches attributes/methods of types, replacing them with a Mock() object.
     """
+    def __init__(self):
+        self.original = None
+        self.target = None
+        self.attribute_name = None
 
     def __call__(self, *args, **kwargs):
         """
@@ -63,12 +65,37 @@ class Patcher(object):
             raise TypeError("target is expected to be a string")
         self._patch_target(target)
 
+    def _patch_target(self, target):
+        target_path, self.attribute_name = target.rsplit(".", 1)
+        self.target = self._importer(target_path)
+        self.original = getattr(self.target, self.attribute_name)
+        setattr(self.target, self.attribute_name, Mock())
+
     @staticmethod
-    def _patch_target(target):
-        module_path, type_name, attr_name = target.rsplit(".", 2)
-        module = importlib.import_module(module_path)
-        type_ = getattr(module, type_name)
-        setattr(type_, attr_name, Mock())
+    def _dot_lookup(thing, comp, import_path):
+        try:
+            return getattr(thing, comp)
+        except AttributeError:
+            __import__(import_path)
+            return getattr(thing, comp)
+
+    @staticmethod
+    def _importer(target):
+        components = target.split('.')
+        import_path = components.pop(0)
+        thing = __import__(import_path)
+
+        for comp in components:
+            import_path += ".{}".format(comp)
+            thing = Patcher._dot_lookup(thing, comp, import_path)
+        return thing
+
+    def stop(self):
+        """Restore the patched attribute to its original state"""
+        if self.target:
+            setattr(self.target, self.attribute_name, self.original)
+            del self.target
+            del self.original
 
 
 class Mocker(object):
@@ -79,6 +106,10 @@ class Mocker(object):
     def __init__(self):
         self.patch = Patcher()
         self.Mock = Mock
+
+    def stop(self):
+        """Reset all patched attributes"""
+        self.patch.stop()
 
 
 @fixture

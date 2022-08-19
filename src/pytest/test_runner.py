@@ -136,6 +136,10 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
                             # Invoke test method
                             test_method(**kwargs)
 
+                            # reset any patched attributes
+                            if "mocker" in kwargs:
+                                kwargs["mocker"].stop()
+
                             result['result'] = '.'
                     except:   # noqa: E722
                         errors += 1
@@ -144,15 +148,16 @@ def run(test_dir, exclude_list=None, pattern='test_*.py', capture_stdout=True):
                         result['exception_message'] = sys.exc_info()[1]
                     finally:
                         result['out'] = out
-                        # Unload modules loaded by the test
-                        modules_loaded_by_test = [m for m in sys.modules if m not in loaded_modules]
-                        for module_to_unload in modules_loaded_by_test:
-                            sys.modules.pop(module_to_unload)
 
                 print(result['result'], end='')
                 if result['result'] == 'F':
                     key = '{}::{}[{}]'.format(test_module, test_method_name, parametrize_counter)
                     collected_errors[key] = result
+
+        # Unload modules loaded by the test
+        modules_loaded_by_test = [m for m in sys.modules if m not in loaded_modules]
+        for module_to_unload in modules_loaded_by_test:
+            sys.modules.pop(module_to_unload)
 
         print()
 
