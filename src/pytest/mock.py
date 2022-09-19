@@ -5,25 +5,56 @@ __all__ = ["mocker"]
 
 
 class Mock(object):
-    """
-    Accepts any call or dot lookup without causing trouble.
-    return_value, if set, is returned for any call using the call operator.
+    """Accepts any call or dot lookup without causing trouble.
 
+    side_effect allows executing callables
+    return_value, if set, is returned for any call using the call operator.
     Any dot lookup which comes back empty sets an attribute with the looked-up name with a Mock() instance as value.
     """
 
     def __init__(self, *_, **kwargs):
         self.return_value = None
+        self._side_effect = None
+
+        try:
+            side_effect = kwargs.pop("side_effect")
+            self.side_effect = side_effect
+        except KeyError:
+            pass
+
         for key_value in kwargs.items():
             object.__setattr__(self, *key_value)
 
-    def __call__(self, *args, **kwargs):
-        """
-        Call this mock as a method.
-        No side effects. Returns None or self.return_value, if set.
+    @property
+    def side_effect(self):
+        return self._side_effect
 
-        TODO: add side effect functionality
+    @side_effect.setter
+    def side_effect(self, value):
+        self._side_effect = None
+        try:
+            # Exceptions are iterable :(
+            if not isinstance(self._side_effect, BaseException):
+                self._side_effect = iter(value)
+        except TypeError:
+            pass
+        self._side_effect = self._side_effect or value
+
+    def __call__(self, *args, **kwargs):
+        """Calls the next side_effect if set. If not, returns the set return_value (default: None).
+
+        Raises
+        ------
+        StopIteration
+            Raised when side_effect is set but no more items are available.
+
         """
+        if self.side_effect:
+            if isinstance(self._side_effect, BaseException):
+                raise self._side_effect
+            if callable(self._side_effect):
+                return self._side_effect(*args, **kwargs)
+            return next(self._side_effect)
         return self.return_value
 
     def __getattribute__(self, item):
