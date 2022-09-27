@@ -1,7 +1,12 @@
 """Add mock and patch functionality in the same minimal, assuming, spirit of this package"""
+from collections import namedtuple
+
 from pytest import fixture
 
 __all__ = ["mocker"]
+
+
+MockFuncCall = namedtuple("MockFuncCall", ["args", "kwargs"])
 
 
 class Mock(object):
@@ -15,6 +20,7 @@ class Mock(object):
     def __init__(self, *_, **kwargs):
         self.return_value = None
         self._side_effect = None
+        self._func_calls = []
 
         try:
             side_effect = kwargs.pop("side_effect")
@@ -29,9 +35,14 @@ class Mock(object):
     def side_effect(self):
         return self._side_effect
 
+    @property
+    def call_count(self):
+        return len(self._func_calls)
+
     @side_effect.setter
     def side_effect(self, value):
         self._side_effect = None
+        self._func_calls.clear()
         try:
             # Exceptions are iterable :(
             if not isinstance(self._side_effect, BaseException):
@@ -49,6 +60,7 @@ class Mock(object):
             Raised when side_effect is set but no more items are available.
 
         """
+        self._func_calls.append(MockFuncCall(args, kwargs))
         if self.side_effect:
             if isinstance(self._side_effect, BaseException):
                 raise self._side_effect
@@ -64,6 +76,58 @@ class Mock(object):
             value = Mock()
             object.__setattr__(self, item, value)
         return value
+
+    def assert_called_once(self):
+        """Asserts if this mock has been called exactly once. If not, an assertion error is raised.
+
+        Raises
+        ------
+        AssertionError
+            Raised if this mock's call count is different from 1.
+
+        """
+        assert self.call_count == 1
+
+    def assert_not_called(self):
+        """Asserts if this mock has not been called. If it has, an assertion error is raised.
+
+        Raises
+        ------
+        AssertionError
+            Raised if this mock's has been called as least once.
+
+        """
+        assert self.call_count == 0
+
+    def assert_called(self):
+        """Asserts if this mock has been called at all. If not, an assertion error is raised.
+        Raises
+        ------
+        AssertionError
+            Raised if this mock has not been called.
+
+        """
+        return self.call_count > 0
+
+    def assert_called_with(self, *args, **kwargs):
+        """Asserts if this mock has been called with the given combination of arguments. If not, an assertion error is raised.
+
+        Parameters
+        ----------
+        args : list, optional
+            A list of expected positional arguments.
+        kwargs : list, optional
+            A dictionary of the expected keyword arguments.
+            
+        Raises
+        ------
+        AssertionError
+            Raised if this mock's has not been called with the expected arguments.
+
+        """
+        is_called_with = any([call.args == args and call.kwargs == kwargs for call in self._func_calls])
+        if not is_called_with:
+            raise AssertionError("Call with args: {} kwargs: {} not found in call list!".format(args, kwargs))
 
 
 class Patcher(object):
