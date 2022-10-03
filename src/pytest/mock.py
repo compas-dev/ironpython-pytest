@@ -118,7 +118,7 @@ class Mock(object):
             A list of expected positional arguments.
         kwargs : list, optional
             A dictionary of the expected keyword arguments.
-            
+
         Raises
         ------
         AssertionError
